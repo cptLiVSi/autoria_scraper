@@ -16,13 +16,18 @@ services:
     environment:
       - SCRAPER_START_PAGE=1
       - SCRAPER_END_PAGE=2005
+      - SCRAPER_DO_BACKUP=true
     volumes:
       - ./dumps:/app/dumps
       - ./logs/scraper_1:/app/logs
     working_dir: /app
-    entrypoint: ["/bin/sh","-c",
-  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
-]
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
+
   scraper_2:
     build: .
     depends_on:
@@ -35,9 +40,13 @@ services:
       - ./dumps:/app/dumps
       - ./logs/scraper_2:/app/logs
     working_dir: /app
-    entrypoint: ["/bin/sh","-c",
-  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
-]
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
+
   scraper_3:
     build: .
     depends_on:
@@ -50,9 +59,13 @@ services:
       - ./dumps:/app/dumps
       - ./logs/scraper_3:/app/logs
     working_dir: /app
-    entrypoint: ["/bin/sh","-c",
-  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
-]
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
+
   scraper_4:
     build: .
     depends_on:
@@ -65,9 +78,13 @@ services:
       - ./dumps:/app/dumps
       - ./logs/scraper_4:/app/logs
     working_dir: /app
-    entrypoint: ["/bin/sh","-c",
-  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
-]
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
+
   scraper_5:
     build: .
     depends_on:
@@ -80,9 +97,13 @@ services:
       - ./dumps:/app/dumps
       - ./logs/scraper_5:/app/logs
     working_dir: /app
-    entrypoint: ["/bin/sh","-c",
-  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
-]
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
+
   scraper_6:
     build: .
     depends_on:
@@ -95,9 +116,13 @@ services:
       - ./dumps:/app/dumps
       - ./logs/scraper_6:/app/logs
     working_dir: /app
-    entrypoint: ["/bin/sh","-c",
-  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
-]
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
+
   scraper_7:
     build: .
     depends_on:
@@ -110,9 +135,13 @@ services:
       - ./dumps:/app/dumps
       - ./logs/scraper_7:/app/logs
     working_dir: /app
-    entrypoint: ["/bin/sh","-c",
-  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
-]
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
+
   scraper_8:
     build: .
     depends_on:
@@ -125,9 +154,13 @@ services:
       - ./dumps:/app/dumps
       - ./logs/scraper_8:/app/logs
     working_dir: /app
-    entrypoint: ["/bin/sh","-c",
-  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
-]
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
+
   scraper_9:
     build: .
     depends_on:
@@ -140,9 +173,13 @@ services:
       - ./dumps:/app/dumps
       - ./logs/scraper_9:/app/logs
     working_dir: /app
-    entrypoint: ["/bin/sh","-c",
-  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
-]
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
+
   scraper_10:
     build: .
     depends_on:
@@ -155,9 +192,12 @@ services:
       - ./dumps:/app/dumps
       - ./logs/scraper_10:/app/logs
     working_dir: /app
-    entrypoint: ["/bin/sh","-c",
-  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
-]
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
 
 volumes:
   db_data:
