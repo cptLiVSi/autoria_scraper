@@ -13,8 +13,147 @@ services:
     depends_on:
       - db
     env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=1
+      - SCRAPER_END_PAGE=2005
     volumes:
       - ./dumps:/app/dumps
+      - ./logs/scraper_1:/app/logs
+    working_dir: /app
+    entrypoint: ["/bin/sh","-c",
+  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
+]
+  scraper_2:
+    build: .
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=2000
+      - SCRAPER_END_PAGE=4005
+    volumes:
+      - ./dumps:/app/dumps
+      - ./logs/scraper_2:/app/logs
+    working_dir: /app
+    entrypoint: ["/bin/sh","-c",
+  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
+]
+  scraper_3:
+    build: .
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=4000
+      - SCRAPER_END_PAGE=6005
+    volumes:
+      - ./dumps:/app/dumps
+      - ./logs/scraper_3:/app/logs
+    working_dir: /app
+    entrypoint: ["/bin/sh","-c",
+  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
+]
+  scraper_4:
+    build: .
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=6000
+      - SCRAPER_END_PAGE=8005
+    volumes:
+      - ./dumps:/app/dumps
+      - ./logs/scraper_4:/app/logs
+    working_dir: /app
+    entrypoint: ["/bin/sh","-c",
+  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
+]
+  scraper_5:
+    build: .
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=8000
+      - SCRAPER_END_PAGE=10005
+    volumes:
+      - ./dumps:/app/dumps
+      - ./logs/scraper_5:/app/logs
+    working_dir: /app
+    entrypoint: ["/bin/sh","-c",
+  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
+]
+  scraper_6:
+    build: .
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=10000
+      - SCRAPER_END_PAGE=12005
+    volumes:
+      - ./dumps:/app/dumps
+      - ./logs/scraper_6:/app/logs
+    working_dir: /app
+    entrypoint: ["/bin/sh","-c",
+  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
+]
+  scraper_7:
+    build: .
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=12000
+      - SCRAPER_END_PAGE=14005
+    volumes:
+      - ./dumps:/app/dumps
+      - ./logs/scraper_7:/app/logs
+    working_dir: /app
+    entrypoint: ["/bin/sh","-c",
+  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
+]
+  scraper_8:
+    build: .
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=14000
+      - SCRAPER_END_PAGE=16005
+    volumes:
+      - ./dumps:/app/dumps
+      - ./logs/scraper_8:/app/logs
+    working_dir: /app
+    entrypoint: ["/bin/sh","-c",
+  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
+]
+  scraper_9:
+    build: .
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=16000
+      - SCRAPER_END_PAGE=18005
+    volumes:
+      - ./dumps:/app/dumps
+      - ./logs/scraper_9:/app/logs
+    working_dir: /app
+    entrypoint: ["/bin/sh","-c",
+  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
+]
+  scraper_10:
+    build: .
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=18000
+      - SCRAPER_END_PAGE=20000
+    volumes:
+      - ./dumps:/app/dumps
+      - ./logs/scraper_10:/app/logs
     working_dir: /app
     entrypoint: ["/bin/sh","-c",
   "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"

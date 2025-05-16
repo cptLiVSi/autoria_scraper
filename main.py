@@ -21,6 +21,9 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+start_page = int(os.getenv("SCRAPER_START_PAGE", 1))
+end_page = int(os.getenv("SCRAPER_END_PAGE", 1))
+
 db = os.getenv("POSTGRES_DB")
 user = os.getenv("POSTGRES_USER")
 password = os.getenv("POSTGRES_PASSWORD")
@@ -35,9 +38,8 @@ engine = create_engine(DB_URI)
 
 def setup_db():
     with engine.begin() as conn:
-        conn.execute(text("DROP TABLE IF EXISTS autoria_cars"))
         conn.execute(text("""
-            CREATE TABLE autoria_cars (
+            CREATE TABLE IF NOT EXISTS autoria_cars (
                 url TEXT PRIMARY KEY,
                 title TEXT,
                 price_usd INTEGER,
@@ -51,7 +53,7 @@ def setup_db():
                 datetime_found TIMESTAMPTZ
             );
         """))
-    logger.info("Database table 'autoria_cars' created (old table dropped)")
+    logger.info("Database table 'autoria_cars' created")
 
 
 def insert_ignore_duplicates(df, engine, table_name):
@@ -63,10 +65,15 @@ def insert_ignore_duplicates(df, engine, table_name):
         with conn.cursor() as cur:
             cols = list(df.columns)
             values = [tuple(x) for x in df.to_numpy()]
+
+            update_cols = [col for col in cols if col != 'url']
+            set_expr = ', '.join([f"{col} = EXCLUDED.{col}" for col in update_cols])
+
             insert_sql = f"""
                 INSERT INTO {table_name} ({', '.join(cols)})
                 VALUES %s
-                ON CONFLICT (url) DO NOTHING
+                ON CONFLICT (url) DO UPDATE SET
+                {set_expr}
             """
             execute_values(cur, insert_sql, values)
         conn.commit()
@@ -102,12 +109,15 @@ def backup_db():
 
 
 def main():
-    for page in range(1,3):
+    for page in range(start_page, end_page + 1):
+    # for page in range(start_page, start_page + 2):
 
         url = f'https://auto.ria.com/car/used/?page={page}'
         logger.info(f"Loading list of cars from page {page}")
         try:
             car_cards_urls_on_page = get_car_cards_urls(url, headers=HEADERS)
+            if not car_cards_urls_on_page:
+                break
         except Exception as e:
             logger.error(f"Failed to get car card URLs from page {page}: {e}")
             continue
@@ -116,7 +126,6 @@ def main():
         page_result = []
 
         for car_url in car_cards_urls_on_page:
-            logger.info(f"Parsing {car_url}")
             try:
                 result = parse_car_page(car_url, HEADERS)
             except Exception as e:
