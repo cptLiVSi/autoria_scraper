@@ -1,4 +1,6 @@
+import random
 import re
+import time
 import requests
 from datetime import datetime as dt, UTC
 from bs4 import BeautifulSoup
@@ -22,9 +24,21 @@ def parse_car_page(url: str, headers) -> dict:
         data_hash = tag_with_hash['data-hash']
         data_expires = tag_with_hash['data-expires']
         phone_request_url = f"https://auto.ria.com/users/phones/{data_auto_id}?hash={data_hash}&expires={data_expires}"
-        response = requests.get(phone_request_url, headers=headers)
-        data = response.json()
-        return "+38" + re.sub(r"\D", "", data['formattedPhoneNumber'])
+
+        max_attempts = 3
+        for attempt in range(1, max_attempts + 1):
+            response = requests.get(phone_request_url, headers=headers)
+            try:
+                data = response.json()
+                phone = "+38" + re.sub(r"\D", "", data['formattedPhoneNumber'])
+                return phone
+            except:
+                if attempt < max_attempts:
+                    sleep_time = random.uniform(0.5, 0.8)
+                    logger.info(f"Sleeping {sleep_time} seconds before retry")
+                    time.sleep(sleep_time)
+        logger.error("Failed to get phone number after 5 attempts, returning default None")
+        return None
 
 
     title = extract('h1.head')
