@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:14
+    restart: always
+    env_file: .env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  scraper_1:
+    build: .
+    depends_on:
+      - db
+    env_file: .env
+    volumes:
+      - ./dumps:/app/dumps
+    working_dir: /app
+    entrypoint: ["/bin/sh","-c",
+  "echo \"$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/cron.log 2>&1\" | crontab - && cron -f"
+]
+
+volumes:
+  db_data:
