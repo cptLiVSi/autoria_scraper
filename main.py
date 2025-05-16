@@ -31,7 +31,6 @@ host = os.getenv("POSTGRES_HOST")
 port = os.getenv("POSTGRES_PORT")
 
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
-START_URL = 'https://auto.ria.com/car/used/?page=1'
 
 DB_URI = f'postgresql://{user}:{password}@{host}:{port}/{db}'
 engine = create_engine(DB_URI)
@@ -53,29 +52,32 @@ def setup_db():
                 datetime_found TIMESTAMPTZ
             );
         """))
-    logger.info("Database table 'autoria_cars' created")
 
 
-def insert_ignore_duplicates(df, engine, table_name):
+def insert_to_db(df, engine, table_name):
     if df.empty:
         return
-
     conn = engine.raw_connection()
     try:
         with conn.cursor() as cur:
             cols = list(df.columns)
+            df = df.astype(object).where(pd.notnull(df), None)
             values = [tuple(x) for x in df.to_numpy()]
 
             update_cols = [col for col in cols if col != 'url']
             set_expr = ', '.join([f"{col} = EXCLUDED.{col}" for col in update_cols])
 
+            cols_str = ', '.join(cols)
             insert_sql = f"""
-                INSERT INTO {table_name} ({', '.join(cols)})
+                INSERT INTO {table_name} ({cols_str})
                 VALUES %s
                 ON CONFLICT (url) DO UPDATE SET
                 {set_expr}
             """
-            execute_values(cur, insert_sql, values)
+
+            template = "(" + ",".join(["%s"] * len(cols)) + ")"
+            execute_values(cur, insert_sql, values, template=template)
+
         conn.commit()
     except Exception as e:
         logger.error(f"Error inserting data into '{table_name}': {e}")
@@ -129,16 +131,18 @@ def main():
             try:
                 result = parse_car_page(car_url, HEADERS)
             except Exception as e:
-                logger.error(f"Error parsing {car_url}: {e}")
+                logger.error(f"Error parsing {car_url}: {e}, {e.__class__}")
                 continue
             page_result.append(result)
         if page_result:
             df = pd.DataFrame(page_result)
-            insert_ignore_duplicates(df, engine, 'autoria_cars')
+            insert_to_db(df, engine, 'autoria_cars')
             logger.info(f"Saved {len(df)} cards")
 
 
 if __name__ == '__main__':
-    backup_db()
+    do_backup = os.getenv("SCRAPER_DO_BACKUP", "false").lower() == "true"
+    if do_backup:
+        backup_db()
     setup_db()
     main()
