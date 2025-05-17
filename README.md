@@ -28,6 +28,15 @@ This project collects used car listings from [auto.ria.com](https://auto.ria.com
 
 ## Usage
 
+### Note:
+During startup, you might see errors like:
+
+```
+scraper_7 Error   pull access denied for autoria_scraper, repository does not exist or may require 'docker login'
+```
+These appear because Docker first tries to pull the image from Docker Hub but it doesn’t exist there.
+This is normal since the image is built locally by Docker Compose.
+
 ### 1. Build and start the application
 
 ```bash

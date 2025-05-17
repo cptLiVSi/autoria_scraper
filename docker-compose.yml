@@ -10,6 +10,7 @@ services:
 
   scraper_1:
     build: .
+    image: autoria_scraper
     depends_on:
       - db
     env_file: .env
@@ -29,7 +30,7 @@ services:
       '
 
   scraper_2:
-    build: .
+    image: autoria_scraper
     depends_on:
       - db
     env_file: .env
@@ -48,7 +49,7 @@ services:
       '
 
   scraper_3:
-    build: .
+    image: autoria_scraper
     depends_on:
       - db
     env_file: .env
@@ -67,7 +68,7 @@ services:
       '
 
   scraper_4:
-    build: .
+    image: autoria_scraper
     depends_on:
       - db
     env_file: .env
@@ -86,7 +87,7 @@ services:
       '
 
   scraper_5:
-    build: .
+    image: autoria_scraper
     depends_on:
       - db
     env_file: .env
@@ -105,7 +106,7 @@ services:
       '
 
   scraper_6:
-    build: .
+    image: autoria_scraper
     depends_on:
       - db
     env_file: .env
@@ -124,7 +125,7 @@ services:
       '
 
   scraper_7:
-    build: .
+    image: autoria_scraper
     depends_on:
       - db
     env_file: .env
@@ -143,7 +144,7 @@ services:
       '
 
   scraper_8:
-    build: .
+    image: autoria_scraper
     depends_on:
       - db
     env_file: .env
@@ -162,7 +163,7 @@ services:
       '
 
   scraper_9:
-    build: .
+    image: autoria_scraper
     depends_on:
       - db
     env_file: .env
@@ -181,7 +182,7 @@ services:
       '
 
   scraper_10:
-    build: .
+    image: autoria_scraper
     depends_on:
       - db
     env_file: .env
