@@ -5,7 +5,7 @@ This project collects used car listings from [auto.ria.com](https://auto.ria.com
 ## Features
 
 - Stores listings in PostgreSQL.
-- Avoiding duplicates with `ON CONFLICT DO UPDATE`.
+- Avoiding duplicates.
 - Performs automatic daily database backups.
 - Runs via Docker Compose.
 - Logging for all scraping and parsing activities.
