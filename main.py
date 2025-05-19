@@ -21,9 +21,6 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-start_page = int(os.getenv("SCRAPER_START_PAGE", 1))
-end_page = int(os.getenv("SCRAPER_END_PAGE", 1))
-
 db = os.getenv("POSTGRES_DB")
 user = os.getenv("POSTGRES_USER")
 password = os.getenv("POSTGRES_PASSWORD")
@@ -35,46 +32,15 @@ HEADERS = {'User-Agent': 'Mozilla/5.0'}
 DB_URI = f'postgresql://{user}:{password}@{host}:{port}/{db}'
 engine = create_engine(DB_URI)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SQL_FILE = os.path.join(BASE_DIR, 'sql_query_create_db.txt')
 
 def setup_db():
-    print(BASE_DIR)
-    with open(SQL_FILE, 'r') as f:
-        query = f.read()
+    folder = os.getcwd()
+    print(folder)
+    with open('/app/sql_query_create_table.txt', 'r') as f:
+        crate_table_query = f.read()
     with engine.begin() as conn:
-        conn.execute(text(query))
-
-
-def insert_to_db(df, engine, table_name):
-    if df.empty:
-        return
-    conn = engine.raw_connection()
-    try:
-        with conn.cursor() as cur:
-            cols = list(df.columns)
-            df = df.astype(object).where(pd.notnull(df), None)
-            values = [tuple(x) for x in df.to_numpy()]
-
-            update_cols = [col for col in cols if col != 'url']
-            set_expr = ', '.join([f"{col} = EXCLUDED.{col}" for col in update_cols])
-
-            cols_str = ', '.join(cols)
-            insert_sql = f"""
-                INSERT INTO {table_name} ({cols_str})
-                VALUES %s
-                ON CONFLICT (url) DO UPDATE SET
-                {set_expr}
-            """
-
-            template = "(" + ",".join(["%s"] * len(cols)) + ")"
-            execute_values(cur, insert_sql, values, template=template)
-
-        conn.commit()
-    except Exception as e:
-        logger.error(f"Error inserting data into '{table_name}': {e}")
-    finally:
-        conn.close()
+        conn.execute(text("DROP TABLE IF EXISTS autoria_cars"))
+        conn.execute(text(crate_table_query))
 
 
 def backup_db():
@@ -103,9 +69,10 @@ def backup_db():
 
 
 def main():
-    for page in range(start_page, end_page + 1):
-    # for page in range(start_page, start_page + 2):
-
+    processed_urls = set()
+    page = 0
+    while True:
+        page += 1
         url = f'https://auto.ria.com/car/used/?page={page}'
         logger.info(f"Loading list of cars from page {page}")
         try:
@@ -115,11 +82,18 @@ def main():
         except Exception as e:
             logger.error(f"Failed to get car card URLs from page {page}: {e}")
             continue
-        logger.info(f"{len(car_cards_urls_on_page)} cards to parse")
+
+        cars_to_process = car_cards_urls_on_page - processed_urls
+        processed_urls.update(cars_to_process)
+
+
+        logger.info(f"{len(cars_to_process)} cards to parse")
+        if len(car_cards_urls_on_page) > len(cars_to_process):
+            logger.info(f"{len(car_cards_urls_on_page) - len(cars_to_process)} already in db")
 
         page_result = []
 
-        for car_url in car_cards_urls_on_page:
+        for car_url in cars_to_process:
             try:
                 result = parse_car_page(car_url, HEADERS)
             except Exception as e:
@@ -128,13 +102,11 @@ def main():
             page_result.append(result)
         if page_result:
             df = pd.DataFrame(page_result)
-            insert_to_db(df, engine, 'autoria_cars')
+            df.to_sql('autoria_cars', engine, if_exists='append', index=False)
             logger.info(f"Saved {len(df)} cards")
 
 
 if __name__ == '__main__':
-    do_backup = os.getenv("SCRAPER_DO_BACKUP", "false").lower() == "true"
-    if do_backup:
-        backup_db()
+    backup_db()
     setup_db()
     main()

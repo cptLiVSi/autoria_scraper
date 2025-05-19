@@ -26,4 +26,4 @@ def get_car_cards_urls(url, headers):
         if "newauto" not in url:
             car_cards_urls.append(url)
 
-    return car_cards_urls
+    return set(car_cards_urls)
