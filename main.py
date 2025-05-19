@@ -71,8 +71,6 @@ def backup_db():
 def main():
     processed_urls = set()
     page = 0
-    # for page in range(start_page, end_page + 1):
-    # for page in range(start_page, start_page + 2):
     while True:
         page += 1
         url = f'https://auto.ria.com/car/used/?page={page}'
