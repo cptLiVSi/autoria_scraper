@@ -35,23 +35,15 @@ HEADERS = {'User-Agent': 'Mozilla/5.0'}
 DB_URI = f'postgresql://{user}:{password}@{host}:{port}/{db}'
 engine = create_engine(DB_URI)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SQL_FILE = os.path.join(BASE_DIR, 'sql_query_create_db.txt')
+
 def setup_db():
+    print(BASE_DIR)
+    with open(SQL_FILE, 'r') as f:
+        query = f.read()
     with engine.begin() as conn:
-        conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS autoria_cars (
-                url TEXT PRIMARY KEY,
-                title TEXT,
-                price_usd INTEGER,
-                odometer INTEGER,
-                username TEXT,
-                phone_number TEXT,
-                image_url TEXT,
-                images_count INTEGER,
-                car_number TEXT,
-                car_vin TEXT,
-                datetime_found TIMESTAMPTZ
-            );
-        """))
+        conn.execute(text(query))
 
 
 def insert_to_db(df, engine, table_name):
