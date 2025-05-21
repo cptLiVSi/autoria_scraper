@@ -4,7 +4,7 @@ from .config import ENGINE
 
 
 def setup_db():
-    with open('/app/db/sql_query_create_table.txt', 'r') as f:
+    with open('/app/db/sql_query_create_table.sql', 'r') as f:
         crate_table_query = f.read()
     with ENGINE.begin() as conn:
         conn.execute(text("DROP TABLE IF EXISTS autoria_cars"))
