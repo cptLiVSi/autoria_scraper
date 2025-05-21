@@ -1,12 +1,7 @@
 import logging
-import subprocess
-import os
 import pandas as pd
-from datetime import datetime as dt
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
-from psycopg2.extras import execute_values
 
+import db
 from get_car_cards_urls import get_car_cards_urls
 from parse_car_page import parse_car_page
 
@@ -18,55 +13,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
-load_dotenv()
-
-db = os.getenv("POSTGRES_DB")
-user = os.getenv("POSTGRES_USER")
-password = os.getenv("POSTGRES_PASSWORD")
-host = os.getenv("POSTGRES_HOST")
-port = os.getenv("POSTGRES_PORT")
-
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
-
-DB_URI = f'postgresql://{user}:{password}@{host}:{port}/{db}'
-engine = create_engine(DB_URI)
-
-
-def setup_db():
-    folder = os.getcwd()
-    print(folder)
-    with open('/app/sql_query_create_table.txt', 'r') as f:
-        crate_table_query = f.read()
-    with engine.begin() as conn:
-        conn.execute(text("DROP TABLE IF EXISTS autoria_cars"))
-        conn.execute(text(crate_table_query))
-
-
-def backup_db():
-    backup_dir = "/app/dumps"
-    os.makedirs(backup_dir, exist_ok=True)
-
-    timestamp = dt.now().strftime("%Y%m%d%H%M%S")
-    backup_file = os.path.join(backup_dir, f"backup-{timestamp}.dump")
-
-    cmd = [
-        "pg_dump",
-        "-U", user,
-        "-h", host,
-        "-p", port,
-        "-d", db,
-        "-F", "c",
-        "-f", backup_file
-    ]
-    env = os.environ.copy()
-    env["PGPASSWORD"] = password
-    try:
-        subprocess.run(cmd, env=env, check=True)
-        logger.info(f"Backup saved to {backup_file}")
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Backup failed: {e}")
-
 
 def main():
     processed_urls = set()
@@ -102,11 +49,11 @@ def main():
             page_result.append(result)
         if page_result:
             df = pd.DataFrame(page_result)
-            df.to_sql('autoria_cars', engine, if_exists='append', index=False)
+            df.to_sql('autoria_cars', db.config.ENGINE, if_exists='append', index=False)
             logger.info(f"Saved {len(df)} cards")
 
 
 if __name__ == '__main__':
-    backup_db()
-    setup_db()
+    db.backup_db()
+    db.setup_db()
     main()
