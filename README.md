@@ -14,15 +14,27 @@ This project collects used car listings from [auto.ria.com](https://auto.ria.com
 
 ```
 .
-├── Dockerfile                 # Image for the scraper app
-├── docker-compose.yml         # Defines services: scraper and PostgreSQL
-├── .env                       # Environment variables
-├── main.py                    # Entry point: orchestrates scraping and saving
-├── get_car_cards_urls.py      # Gets car card URLs from listing pages
-├── parse_car_page.py          # Parses individual car detail pages
-├── dumps/                     # Directory for database backups
-├── logs/                      # Directory for log files
-└── requirements.txt           # Python dependencies
+├── db/
+│   ├── __init__.py
+│   ├── backup_db.py            # Dumps the database to /app/dumps
+│   ├── config.py               # Loads env vars and configures SQLAlchemy
+│   ├── models.py               # SQLAlchemy ORM model
+│   └── setup_db.py             # Creates tables using ORM
+│
+├── scraper/
+│   ├── __init__.py
+│   ├── get_car_cards_urls.py   # Gets car listing URLs from index pages
+│   ├── parse_car_page.py       # Parses detailed car data from each URL
+│   └── run_scraper.py          # Main scraping logic
+│
+├── dumps/                      # PostgreSQL backup files (dump format)
+├── logs/                       # Log files (scraping, cron)
+├── .env                        # Environment variables
+├── Dockerfile                  # Image for the scraper container
+├── docker-compose.yml          # Services: scraper and PostgreSQL
+├── main.py                     # Entry point: runs backup, setup, scraper
+└── requirements.txt            # Python dependencies
+
 ```
 
 
