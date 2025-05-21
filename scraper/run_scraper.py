@@ -1,5 +1,6 @@
 import logging
-import pandas as pd
+from sqlalchemy.orm import Session
+from db.models import AutoriaCar
 
 import db
 from .get_car_cards_urls import get_car_cards_urls
@@ -54,6 +55,9 @@ def process_cars_on_page(cars_to_process):
 
 
 def save_to_db(page_result):
-    df = pd.DataFrame(page_result)
-    df.to_sql('autoria_cars', db.config.ENGINE, if_exists='append', index=False)
-    logger.info(f"Saved {len(df)} cards")
+    with Session(db.config.ENGINE) as session:
+        for item in page_result:
+            car = AutoriaCar(**item)
+            session.merge(car)
+        session.commit()
+    logger.info(f"Saved {len(page_result)} cards")
