@@ -40,6 +40,7 @@ def run_scraper():
             page_result = process_cars_on_page(cars_to_process)
             if page_result:
                 save_to_db(page_result)
+    logger.info("Scraping completed")
 
 
 def process_cars_on_page(cars_to_process):
