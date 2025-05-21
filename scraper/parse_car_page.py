@@ -19,12 +19,15 @@ def parse_car_page(url: str, headers) -> dict:
         return el.get_text(strip=True) if el else None
 
     def get_phone_number():
+        # Attempt to fetch seller's phone number using data-hash and data-auto-id
+        # AutoRia uses this mechanism to hide phone data
         data_auto_id = soup.body.get('data-auto-id')
         tag_with_hash = soup.find(attrs={"data-hash": True})
         data_hash = tag_with_hash['data-hash']
         data_expires = tag_with_hash['data-expires']
         phone_request_url = f"https://auto.ria.com/users/phones/{data_auto_id}?hash={data_hash}&expires={data_expires}"
 
+        # Retry up to 3 times in case of connection errors
         max_attempts = 3
         for attempt in range(1, max_attempts + 1):
             response = requests.get(phone_request_url, headers=headers)
@@ -37,7 +40,7 @@ def parse_car_page(url: str, headers) -> dict:
                     sleep_time = random.uniform(0.5, 0.8)
                     logger.info(f"Sleeping {sleep_time} seconds before retry")
                     time.sleep(sleep_time)
-        logger.error("Failed to get phone number after 5 attempts, returning default None")
+        logger.error("Failed to get phone number after 3 attempts, returning default None")
         return None
 
 

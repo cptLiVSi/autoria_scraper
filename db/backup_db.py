@@ -15,6 +15,7 @@ def backup_db():
     timestamp = dt.now().strftime("%Y%m%d%H%M%S")
     backup_file = os.path.join(backup_dir, f"backup-{timestamp}.dump")
 
+    # Prepare pg_dump command to create a compressed backup of the DB
     cmd = [
         "pg_dump",
         "-U", USER,
@@ -25,6 +26,8 @@ def backup_db():
         "-f", backup_file
     ]
     env = os.environ.copy()
+
+    # Pass password securely via environment variable
     env["PGPASSWORD"] = PASSWORD
     try:
         subprocess.run(cmd, env=env, check=True)

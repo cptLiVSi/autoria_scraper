@@ -6,12 +6,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 def get_car_cards_urls(url, headers):
+    # Retry up to 3 times in case of connection errors
     max_attempts = 3
     for attempt in range(1, max_attempts + 1):
         try:
             res = requests.get(url, headers=headers)
             res.raise_for_status()
             soup = BeautifulSoup(res.text, 'html.parser')
+            # Extract items with urls
             car_cards = soup.select('section.ticket-item')
             break
         except Exception as e:
@@ -22,6 +24,7 @@ def get_car_cards_urls(url, headers):
     car_cards_urls = []
 
     for card in car_cards:
+        # Extract links to car detail pages, skips new cars
         url = card.select_one('a.address')['href']
         if "newauto" not in url:
             car_cards_urls.append(url)

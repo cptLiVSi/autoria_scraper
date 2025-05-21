@@ -19,7 +19,7 @@ HEADERS = {'User-Agent': 'Mozilla/5.0'}
 def run_scraper():
     processed_urls = set()
     page = 0
-    car_cards_urls_on_page = True  #  value to enter the loop for the 1st time
+    car_cards_urls_on_page = True  # Value to enter the loop for the 1st time
     while car_cards_urls_on_page:
         page += 1
         url = f'https://auto.ria.com/car/used/?page={page}'
@@ -30,6 +30,7 @@ def run_scraper():
             logger.error(f"Failed to get car card URLs from page {page}: {e}")
             continue
         if car_cards_urls_on_page:
+            # Skip URLs that were already processed (avoid re-scraping in same session)
             cars_to_process = car_cards_urls_on_page - processed_urls
             processed_urls.update(cars_to_process)
 
