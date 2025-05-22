@@ -8,19 +8,65 @@ services:
     ports:
       - "5432:5432"
 
-  scraper:
+  scraper_1:
     build: .
+    image: autoria_scraper
     depends_on:
       - db
     env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=1
+      - SCRAPER_END_PAGE=605
+      - SCRAPER_DO_BACKUP=true
     volumes:
       - .:/app
       - ./dumps:/app/dumps
-      - ./logs/scraper:/app/logs
+      - ./logs/scraper_1:/app/logs
     working_dir: /app
     entrypoint: |
       /bin/sh -c '
-      echo "$SCRAPER_CRON_TIME /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
+
+  scraper_2:
+    image: autoria_scraper
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=600
+      - SCRAPER_END_PAGE=1205
+    volumes:
+      - .:/app
+      - ./dumps:/app/dumps
+      - ./logs/scraper_2:/app/logs
+    working_dir: /app
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
+      cron -f
+      '
+
+  scraper_3:
+    image: autoria_scraper
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      - SCRAPER_START_PAGE=1200
+      - SCRAPER_END_PAGE=1800
+    volumes:
+      - .:/app
+      - ./dumps:/app/dumps
+      - ./logs/scraper_3:/app/logs
+    working_dir: /app
+    entrypoint: |
+      /bin/sh -c '
+      printenv | grep SCRAPER >> /etc/environment
+      echo "$SCRAPER_CRON_TIME . /etc/environment && /usr/local/bin/python /app/main.py >> /app/logs/cron.log 2>&1" | crontab -
       cron -f
       '
 

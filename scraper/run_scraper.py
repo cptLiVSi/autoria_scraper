@@ -16,9 +16,12 @@ logger = logging.getLogger(__name__)
 
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
 
-def run_scraper():
+def run_scraper(start_page, end_page):
     processed_urls = set()
-    page = 0
+    if start_page:
+        page = start_page - 1
+    else:
+        page = 0
     car_cards_urls_on_page = True  # Value to enter the loop for the 1st time
     while car_cards_urls_on_page:
         page += 1
@@ -48,6 +51,9 @@ def run_scraper():
             page_result = process_cars_on_page(cars_to_process)
             if page_result:
                 save_to_db(page_result)
+        if page == end_page:
+            logger.info("Reached end page for container, scraping completed for the container")
+            break
     logger.info("Scraping completed")
 
 
