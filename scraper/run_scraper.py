@@ -25,7 +25,14 @@ def run_scraper():
         url = f'https://auto.ria.com/car/used/?page={page}'
         logger.info(f"Loading list of cars from page {page}")
         try:
-            car_cards_urls_on_page = get_car_cards_urls(url, headers=HEADERS)
+            continue_parsing, car_cards_urls_on_page = get_car_cards_urls(url, headers=HEADERS)
+
+            # Sometimes pages may be full of new cars, so we continue with next page
+            if not car_cards_urls_on_page:
+                if continue_parsing:
+                    car_cards_urls_on_page = True
+                    continue
+
         except Exception as e:
             logger.error(f"Failed to get car card URLs from page {page}: {e}")
             continue
